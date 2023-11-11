@@ -170,7 +170,7 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
 
     for a in major_list:
         for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
-            열_이름 = f"(부){a} {과목_종별}"
+            열_이름 = f"(1전공){a} {과목_종별}"
             output_columns[열_이름] = " "
             total_credits[열_이름] = double_major_requirements[a][학점_명]
             completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, a)
