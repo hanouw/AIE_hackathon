@@ -155,7 +155,7 @@ def single_major(main_major, minor_list, advanced_list):
 
     if len(minor_list) == 0 and len(advanced_list) == 0:
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
-    else:
+    elif len(minor_list)!=0 and len(advanced_list)==0:
         # for a in minor_list:
         #     output_columns[f"(부){a} 전기"] = " "
         #     output_columns[f"(부){a} 전필"] = " "
