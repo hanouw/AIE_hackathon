@@ -168,6 +168,8 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
         "3~4000단위":" ",
     }
 
+    def calculate_completed_credits(df, 과목_종별, 개설전공):
+            return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
     for a in major_list:
         for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
             열_이름 = f"(1전공){a} {과목_종별}"
@@ -180,8 +182,6 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
 
 
     if len(minor_list)!=0 and len(advanced_list)==0:
-        def calculate_completed_credits(df, 과목_종별, 개설전공):
-            return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
 
         for a in minor_list:
             for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
