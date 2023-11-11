@@ -8,9 +8,6 @@ from major_checker import get_additional_majors
 # majors_dict, double_majors, minors, advanced_majors = get_additional_majors()----------------------------------------나중에 키기
 
 
-import os
-os.system('cls')
-
 # 엑셀 파일 불러오기
 excel_file_path = 'report.xlsx'
 df = pd.read_excel(excel_file_path, header=3)
@@ -39,16 +36,19 @@ df_filtered_과목종별_채플 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) &
 df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목 종별'] == '교기')]
 df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목 종별'] == '교기')]
 
-#GLC영어 이수 유무
-GLC영어_학점 = 6
+def GLC영어_학점():
+    #GLC영어 이수 유무
+    GLC영어_학점 = 6
 
-# GLC영어1 과목을 찾고, 그 학점이 0인지 확인 후, 조건이 참이면 GLC영어_학점에서 3을 뺍니다.
-if ((df['교과목명'] == 'GLC영어1') & (df['학점'] == 0)).any():
-    GLC영어_학점 -= 3
+    # GLC영어1 과목을 찾고, 그 학점이 0인지 확인 후, 조건이 참이면 GLC영어_학점에서 3을 뺍니다.
+    if ((df['교과목명'] == 'GLC영어1') & (df['학점'] == 0)).any():
+        GLC영어_학점 -= 3
 
-# GLC영어2 과목을 찾고, 그 학점이 0인지 확인 후, 조건이 참이면 GLC영어_학점에서 3을 뺍니다.
-if ((df['교과목명'] == 'GLC영어2') & (df['학점'] == 0)).any():
-    GLC영어_학점 -= 3
+    # GLC영어2 과목을 찾고, 그 학점이 0인지 확인 후, 조건이 참이면 GLC영어_학점에서 3을 뺍니다.
+    if ((df['교과목명'] == 'GLC영어2') & (df['학점'] == 0)).any():
+        GLC영어_학점 -= 3
+    return GLC영어_학점
+
 
 
 # Define required credits for each category
@@ -109,13 +109,13 @@ completed_credits = {
     "전선":int(df_filtered_과목종별_전선['학점'].sum()),
     "전필":int(df_filtered_과목종별_전필["학점"].sum()),
     "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
-    "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
+    "3-4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
 }
 
 
 total_credits = {
     "구분":"요건",
-    "GLC영어": GLC영어_학점,
+    "GLC영어": GLC영어_학점(),
     "채플":common_subject["채플"],
     "기독교의 이해":common_subject["기독교의 이해"],
     "GLC교양":common_subject["GLC교양"],
@@ -124,7 +124,7 @@ total_credits = {
            common_subject["기독교의 이해"]+
            common_subject["GLC교양"]+
            common_subject["RC"])+
-           GLC영어_학점,
+           GLC영어_학점(),
     " ":" ",
     "전기": required_credits["전공기초"],
     "전선": required_credits["전공선택"],
@@ -137,12 +137,12 @@ remaining_credits = {
     "구분":"필요",
     "채플":common_subject["채플"] - completed_credits["채플"],
     "기독교의 이해":common_subject["기독교의 이해"] - completed_credits["기독교의 이해"],
-    "GLC영어": GLC영어_학점 - completed_credits["GLC영어"],
+    "GLC영어": GLC영어_학점() - completed_credits["GLC영어"],
     "GLC교양":common_subject["GLC교양"] - completed_credits["GLC교양"],
     "RC":common_subject["RC"] - completed_credits["RC"],
     "소계": (common_subject["채플"] - completed_credits["채플"]+
            common_subject["기독교의 이해"] - completed_credits["기독교의 이해"]+
-           GLC영어_학점 - completed_credits["GLC영어"]+
+           GLC영어_학점() - completed_credits["GLC영어"]+
            common_subject["GLC교양"] - completed_credits["GLC교양"]+
            common_subject["RC"] - completed_credits["RC"]),
     " ":" ",
@@ -150,7 +150,7 @@ remaining_credits = {
     "전선": required_credits["전공선택"] - completed_credits["전선"],
     "전필": required_credits["전공필수"] - completed_credits["전필"],
     "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
-    "3-4000단위": required_credits["3-4000단위"] - completed_credits["3~4000단위"],
+    "3-4000단위": required_credits["3-4000단위"] - completed_credits["3-4000단위"],
 }
 
 output_columns = {
@@ -166,7 +166,7 @@ output_columns = {
     "전선":" ",
     "전필":" ",
     "GLC교양":" ",
-    "3~4000단위":" ",
+    "3-4000단위":" ",
 }
 
 
