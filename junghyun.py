@@ -1,39 +1,43 @@
 import pandas as pd
 
 class Major:
-    def __init__(self, name, required_credits=None, course_numbers=None):
+    def __init__(self, name, course_codes, required_credits):
         self.name = name
-        self.required_credits = required_credits if required_credits else {}
-        self.course_numbers = course_numbers if course_numbers else {}
+        self.course_codes = course_codes
+        self.required_credits = required_credits
+        self.completed_credits = 0
 
-    def calculate_remaining_credits(self, completed_courses):
-        completed_credits = {category: 0 for category in self.required_credits}
+    def calculate_completed_credits(self, df):
+        filtered_df = df[df['학정번호'].isin(self.course_codes) & ~df['평가'].isin(['W', 'NP', 'F', 'U'])]
+        self.completed_credits = filtered_df['학점'].sum()
 
-        for course in completed_courses:
-            if course['평가'] not in ['NP', 'F', 'W']:
-                for category, numbers in self.course_numbers.items():
-                    if course['학정번호'] in numbers:
-                        completed_credits[category] += course['학점']
-                        break
+    def calculate_remaining_credits(self):
+        return {category: self.required_credits[category] - self.completed_credits for category in self.required_credits}
 
-        remaining_credits = {category: self.required_credits[category] - completed_credits[category]
-                             for category in self.required_credits}
-
-        return remaining_credits
-
-# Read the Excel file into a DataFrame
+# Load the Excel file
 excel_file_path = 'report.xlsx'
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel(excel_file_path, header=3)  # Adjust the header row as needed
 
-# Convert DataFrame rows into a list of dictionaries
-completed_courses = df.to_dict('records')
+# Define required credits for each category (common for all majors)
+required_credits = {"전공기초": 20, "전공필수": 30, "전공선택": 15, "일반교양": 20, "교양기초": 10, "대학교양": 5, "공통기초": 10}
 
-# Example: Create an instance for the 응용정보공학 major
-# Fill in the actual required credits and course numbers for this major
-응용정보공학 = Major("응용정보공학", {"전공기초": 20, "전공필수": 30, ...}, {"전공기초": ["COURSE001", "COURSE002", ...], ...})
+# Define the unique course codes for each major
+majors = [
+    Major("응용정보공학", ["APL101", "APL102", ...], required_credits),  # Replace with actual course codes
+    Major("바이오생명공학", ["BIO201", "BIO202", ...], required_credits),  # Replace with actual course codes
+    # Add other majors similarly
+]
 
-# Calculate remaining credits for a student in the 응용정보공학 major
-remaining_credits = 응용정보공학.calculate_remaining_credits(completed_courses)
+# Calculate completed and remaining credits for each major
+for major in majors:
+    major.calculate_completed_credits(df)
+    remaining_credits = major.calculate_remaining_credits()
 
-# Output the results
-print(f"Remaining Credits for {응용정보공학.name}: {remaining_credits}")
+    # Create a DataFrame for the output
+    output_df = pd.DataFrame(list(remaining_credits.items()), columns=["Category", "Remaining Credits"])
+
+    # Write to an Excel file
+    output_file_name = f"{major.name}_result_file.xlsx"
+    output_df.to_excel(output_file_name, index=False)
+
+    print(f"Results for {major.name} written to {output_file_name}")
