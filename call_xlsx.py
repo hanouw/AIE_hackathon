@@ -1,7 +1,7 @@
 import pandas as pd
 
 # 엑셀 파일 불러오기
-excel_file_path = 'C:/aaa_yonsei/2023_02 yonsei/AIE_Hackathon/AIE_hackathon/report_xlsx.xlsx'
+excel_file_path = 'report.xlsx'
 df = pd.read_excel(excel_file_path)
 
 # Filter out courses with 'W' grade
