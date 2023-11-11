@@ -6,7 +6,7 @@ import numpy as np
 
 def multi_majors(main_major,major_list, minor_list, advanced_list):
 
-            
+          
 
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'
@@ -150,6 +150,47 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
         "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"] - completed_credits["3~4000단위"],
     }
+
+
+
+        # Function to calculate credits based on major and its requirements
+    def calculate_credits(major, requirements):
+        # Filter DataFrame for the current major
+        df_filtered = df[df['개설전공'] == major]
+
+        # Implement your logic to calculate credits based on df_filtered and requirements
+        # Example: completed_credits = df_filtered['학점'].sum()
+        # Return the calculated credits
+
+        return {  # This is a placeholder, adjust as needed
+            "GLC영어": ...,
+            "채플": ...,
+            "기독교의 이해": ...,
+            "GLC교양": ...,
+            "RC": ...,
+            "전기": ...,
+            "전선": ...,
+            "전필": ...,
+            "GLC교양": ...,
+            "3-4000단위": ...,
+            # Add other categories as needed
+        }
+
+    # Process main major, majors, minors, and advanced majors
+    all_results = []
+    for major in [main_major] + major_list + minor_list + advanced_list:
+        if major == main_major:
+            requirements = required_credits_dict[major]
+        elif major in major_list:
+            requirements = double_major_requirements.get(major, {})
+        elif major in minor_list:
+            requirements = minor_requirements.get(major, {})
+        else:  # Advanced majors
+            requirements = advanced_major_requirements.get(major, {})
+
+        credits = calculate_credits(major, requirements)
+        all_results.append(credits)
+
 
     output_columns = {
         "구분":" ",
