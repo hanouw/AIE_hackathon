@@ -59,6 +59,7 @@ common_subject = {
 required_credits = required_credits_dict[read_major()]
 
 completed_credits = {
+    "구분":"이수",
     "전기":int(df_filtered_과목종별_전기['학점'].sum()),
     "전선":int(df_filtered_과목종별_전선['학점'].sum()),
     "전필":int(df_filtered_과목종별_전필["학점"].sum()),
@@ -74,6 +75,7 @@ completed_credits = {
 }
 
 remaining_credits = {
+    "구분":"필요",
     "전기": required_credits["전공기초"] - completed_credits["전기"],
     "전선": required_credits["전공선택"] - completed_credits["전선"],
     "전필": required_credits["전공필수"] - completed_credits["전필"],
@@ -83,23 +85,25 @@ remaining_credits = {
 }
 
 output_columns = {
+    "구분":" ",
+    "채플":common_subject["채플"],
+    "기독교":common_subject["기독교의 이해"],
+    "GLC 영어":1,
+    "GLC교양":common_subject["GLC교양"],
+    "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]),
     " ": " ",
     "전기":" ",
     "전선":" ",
+    "전필":" ",
     "RC":" ",
     "GLC교양":" ",
     "3~4000단위":" ",
-#     "채플":common_subject["채플"],
-#     "기독교":common_subject["기독교의 이해"],
-#     "GLC 영어":1,
-#     "GLC교양":common_subject["GLC교양"],
-#     "RC필수":common_subject["RC"],
-#     "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"])
 }
 
 
 # Create a DataFrame for the output
-output_df = pd.DataFrame([{completed_credits},{remaining_credits}], columns=output_columns.keys()) #전체, 이수, 잔여
+output_df = pd.DataFrame([completed_credits,remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
 output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
