@@ -4,10 +4,7 @@ import numpy as np
 from major_checker import read_major
 
 def SingleMajor():
-    #복수, 부, 심화 전공 여부 및 어떠한 전공인지 확인
-    # majors_dict, double_majors, minors, advanced_majors = get_additional_majors()----------------------------------------나중에 키기
 
-    
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'
     df = pd.read_excel(excel_file_path, header=3)
