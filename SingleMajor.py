@@ -156,20 +156,6 @@ def single_major(main_major, minor_list, advanced_list):
     if len(minor_list) == 0 and len(advanced_list) == 0:
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
     elif len(minor_list)!=0 and len(advanced_list)==0:
-        # for a in minor_list:
-        #     output_columns[f"(부){a} 전기"] = " "
-        #     output_columns[f"(부){a} 전필"] = " "
-        #     output_columns[f"(부){a} 전선"] = " "
-        #     total_credits[f"(부){a} 전기"] = minor_requirements[a]["전공기초"]
-        #     total_credits[f"(부){a} 전필"] = minor_requirements[a]["전공필수"]
-        #     total_credits[f"(부){a} 전선"] = minor_requirements[a]["전공선택"]
-        #     completed_credits[f"(부){a} 전기"] = int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == a)]['학점'].sum())
-        #     completed_credits[f"(부){a} 전필"] = int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == a)]['학점'].sum())
-        #     completed_credits[f"(부){a} 전선"] = int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)]['학점'].sum())
-        #     remaining_credits[f"(부){a} 전기"] = (required_credits["전공기초"] - completed_credits["전기"]),
-        #     remaining_credits[f"(부){a} 전필"] = (required_credits["전공필수"] - completed_credits["전필"]),
-        #     remaining_credits[f"(부){a} 전선"] = (required_credits["전공선택"] - completed_credits["전선"]),
-
         def calculate_completed_credits(df, 과목_종별, 개설전공):
             return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
 
