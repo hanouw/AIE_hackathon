@@ -8,6 +8,5 @@ if __name__ == "__main__":
     get_additional_majors()
 
 
-if __name__ == "__main__":
-    analyze_major()
+
     
