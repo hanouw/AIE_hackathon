@@ -21,4 +21,3 @@ output_df = pd.DataFrame(list(remaining_credits.items()), columns=["Category", "
 
 # Write to an Excel file
 output_df.to_excel("AIE_hackathon/report_xlsx.xlsx", index=False)
-
