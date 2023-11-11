@@ -1,4 +1,3 @@
-from major_main_checker import read_major
 import pandas as pd
 from openpyxl import load_workbook
 
