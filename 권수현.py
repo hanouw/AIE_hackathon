@@ -72,10 +72,22 @@ total_credits = {
     "3-4000단위": required_credits["3-4000단위"],
 }
 
-# Create a DataFrame for the output
-output_df = pd.DataFrame([remaining_credits], columns=remaining_credits.keys())
-output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
+# Calculate the total and completed credits for each category
+total_completed = {category: {"Total Credits": total_credits[category], "Completed Credits": completed_credits[category]}
+                   for category in total_credits}
+
+# Create a DataFrame for the output with multi-level columns
+multi_index_columns = pd.MultiIndex.from_tuples([(category, info) for category in total_completed for info in total_completed[category]])
+output_data = [[total_completed[category][info] for category in total_completed for info in total_completed[category]]]
+
+output_df = pd.DataFrame(output_data, columns=multi_index_columns)
+
+# Add remaining credits row
+remaining_credits_row = [remaining_credits[category] for category in remaining_credits]
+output_df.loc['Remaining Credits'] = remaining_credits_row
+
+# Handle negative values - replace them with zero
+output_df = output_df.applymap(lambda x: 0 if x < 0 else x)
 
 # Write to an Excel file
-output_df.to_excel("result_file.xlsx", index=False)
-
+output_df.to_excel("result_file.xlsx")
