@@ -153,6 +153,12 @@ def single_major(main_major, minor_list, advanced_list):
     "한국어문화교육": {"전기": 6, "전필": 6, "전선": 9},
     }
 
+    # if len(minor_list) == 0 and len(advanced_list) == 0:
+    #     output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
+    # elif len(minor_list)!=0 and len(advanced_list)==0:
+    #     def calculate_completed_credits(df, 과목_종별, 개설전공):
+    #         return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
+
     if len(minor_list) == 0 and len(advanced_list) == 0:
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
     elif len(minor_list)!=0 and len(advanced_list)==0:
@@ -165,8 +171,9 @@ def single_major(main_major, minor_list, advanced_list):
                 output_columns[열_이름] = " "
                 total_credits[열_이름] = minor_requirements[a][학점_명]
                 completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, a)
-                remaining_credits[열_이름] = total_credits[학점_명] - completed_credits[과목_종별]
+                remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
+
     # elif len(minor_list)==0 and len(advanced_list)!=0:
     #     def calculate_completed_credits(df, 과목_종별, 개설전공):
     #         return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
