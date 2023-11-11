@@ -3,8 +3,8 @@ import numpy as np
 
 from major_checker import read_major
 
-def SingleMajor():
-
+def single_major(main_major):
+    
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'
     df = pd.read_excel(excel_file_path, header=3)
@@ -23,9 +23,9 @@ def SingleMajor():
 
 
     # Filter out courses
-    df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == read_major())]
-    df_filtered_과목종별_전선 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == read_major())]
-    df_filtered_과목종별_전필 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == read_major())]
+    df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == main_major)]
+    df_filtered_과목종별_전선 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == main_major)]
+    df_filtered_과목종별_전필 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == main_major)]
     df_filtered_과목종별_RC = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 'RC') & df['교과목명'].str.startswith("YONSEI", na=False)]
     df_filtered_과목종별_GLC교양 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['과목 종별'] == '대교') & (df['학정번호'].str[:3] == 'GLC')]
     df_filtered_과목종별_34000단위 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['학정번호'].str[3:5] == '3천, 4천 단위')]
@@ -73,7 +73,7 @@ def SingleMajor():
         "GLC교양": 9,
     }
 
-    required_credits = required_credits_dict[read_major()]
+    required_credits = required_credits_dict[main_major]
 
     completed_credits = {
         "구분":"이수",
