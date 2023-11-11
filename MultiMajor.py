@@ -49,31 +49,30 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
 
     # Define required credits for each category
     required_credits_dict = {
-        "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
-        "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45},
-        "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
-        "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
-        "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
+        "국제통상전공": {"전공기초": 6, "전공선택": 30, "3-4000단위": 45},
+        "한국어문화교육전공": {"전공필수": 39, "전공선택": 6, "3-4000단위": 45},
+        "문화미디어전공": {"전공기초": 6, "전공선택": 30, "3-4000단위": 45},
+        "바이오생활공학전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15, "3-4000단위": 45},
+        "응용정보공학전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15, "3-4000단위": 45}
     }
 
     # Define 복수전공 (double major) requirements for each major
     double_major_requirements = {
-        "응용정보공학": {"1전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15, "3-4000단위": 45},
-                    "2전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15}},
-        "국제통상": {"1전공": {"전공기초": 6, "전공선택": 30, "3-4000단위": 45},
-                "2전공": {"전공기초": 6, "전공선택": 30}},
-        "바이오생활공학": {"1전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15, "3-4000단위": 45},
-                        "2전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15}},
-        "한국어문화교육": {"1전공": {"전공기초": 39, "전공필수": 6, "3-4000단위": 45},
-                    "2전공": {"전공기초": 39, "전공필수": 6}},
-        "문화미디어": {"1전공": {"전공기초": 6, "전공선택": 30, "3-4000단위": 45},
-                    "2전공": {"전공기초": 6, "전공선택": 30}}
+        "응용정보공학": {"전공기초": 9, "전공필수": 12, "전공선택": 15},
+        "국제통상": {"전공기초": 6, "전공선택": 30},
+        "바이오생활공학": {"전공기초": 9, "전공필수": 12, "전공선택": 15},
+        "한국어문화교육": {"전공기초": 39, "전공필수": 6},
+        "문화미디어": {"전공기초": 6, "전공선택": 30}
     }
 
     # Define 부전공 (minor) requirements for each major
     minor_requirements = {
         "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
         "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
+    }
+
+    advanced_major_requirements = {
+        "AI융합심화": {"AI 코어과목": 9, "1전공 AI융합심화전공":3, "1전공":51}
     }
 
     common_subject = {
@@ -151,43 +150,43 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
 
 
 
-        # Function to calculate credits based on major and its requirements
-    def calculate_credits(major, requirements):
-        # Filter DataFrame for the current major
-        df_filtered = df[df['개설전공'] == major]
+    #     # Function to calculate credits based on major and its requirements
+    # def calculate_credits(major, requirements):
+    #     # Filter DataFrame for the current major
+    #     df_filtered = df[df['개설전공'] == major]
 
-        # Implement your logic to calculate credits based on df_filtered and requirements
-        # Example: completed_credits = df_filtered['학점'].sum()
-        # Return the calculated credits
+    #     # Implement your logic to calculate credits based on df_filtered and requirements
+    #     # Example: completed_credits = df_filtered['학점'].sum()
+    #     # Return the calculated credits
 
-        return {  # This is a placeholder, adjust as needed
-            "GLC영어": ...,
-            "채플": ...,
-            "기독교의 이해": ...,
-            "GLC교양": ...,
-            "RC": ...,
-            "전기": ...,
-            "전선": ...,
-            "전필": ...,
-            "GLC교양": ...,
-            "3-4000단위": ...,
-            # Add other categories as needed
-        }
+    #     return {  # This is a placeholder, adjust as needed
+    #         "GLC영어": ...,
+    #         "채플": ...,
+    #         "기독교의 이해": ...,
+    #         "GLC교양": ...,
+    #         "RC": ...,
+    #         "전기": ...,
+    #         "전선": ...,
+    #         "전필": ...,
+    #         "GLC교양": ...,
+    #         "3-4000단위": ...,
+    #         # Add other categories as needed
+    #     }
 
-    # Process main major, majors, minors, and advanced majors
-    all_results = []
-    for major in [main_major] + major_list + minor_list + advanced_list:
-        if major == main_major:
-            requirements = required_credits_dict[major]
-        elif major in major_list:
-            requirements = double_major_requirements.get(major, {})
-        elif major in minor_list:
-            requirements = minor_requirements.get(major, {})
-        else:  # Advanced majors
-            requirements = advanced_major_requirements.get(major, {})
+    # # Process main major, majors, minors, and advanced majors
+    # all_results = []
+    # for major in [main_major] + major_list + minor_list + advanced_list:
+    #     if major == main_major:
+    #         requirements = required_credits_dict[major]
+    #     elif major in major_list:
+    #         requirements = double_major_requirements.get(major, {})
+    #     elif major in minor_list:
+    #         requirements = minor_requirements.get(major, {})
+    #     else:  # Advanced majors
+    #         requirements = advanced_major_requirements.get(major, {})
 
-        credits = calculate_credits(major, requirements)
-        all_results.append(credits)
+    #     credits = calculate_credits(major, requirements)
+    #     all_results.append(credits)
 
 
     output_columns = {
