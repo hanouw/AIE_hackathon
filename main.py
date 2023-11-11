@@ -7,3 +7,5 @@ if __name__ == "__main__":
     print(main_major)
     get_additional_majors()
 
+    
+
