@@ -95,11 +95,11 @@ required_credits = required_credits_dict[read_major()]
 
 completed_credits = {
     "구분":"이수",
-    # "채플":common_subject["채플"],
-    # "기독교":common_subject["기독교의 이해"],
-    # "GLC 영어":1,
-    # "GLC교양":common_subject["GLC교양"],
-    # "RC필수":common_subject["RC"],
+    "채플":int(df_filtered_과목종별_채플['학점'].sum()),
+    "기독교":int(df_filtered_과목종별_기독교의이해['학점'].sum()),
+    "GLC 영어": int(df_filtered_과목종별_GLC영어['학점'].sum()),
+    "GLC교양":int(df_filtered_과목종별_GLC교양['학점'].sum()),
+    "RC필수":int(df_filtered_과목종별_RC['학점'].sum()),
     "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------영어추가 이수로 변경
     " ":" ",
     "전기":int(df_filtered_과목종별_전기['학점'].sum()),
@@ -110,14 +110,18 @@ completed_credits = {
     "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
 }
 
-"구분":"요건",
-"GLC영어": common_subject.values(GLC영어_학점)
-"채플":common_subject["채플"],
-"기독교":common_subject["기독교의 이해"],
-"GLC교양":common_subject["GLC교양"],
-"RC필수":common_subject["RC"],
-"소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------------영어 추가
+
+total_credits = {
+    "구분":"요건",
+    "GLC영어": common_subject.values(GLC영어_학점),
+    "채플":common_subject["채플"],
+    "기독교":common_subject["기독교의 이해"],
+    "GLC교양":common_subject["GLC교양"],
+    "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------------영어 추가
 # 이거 추가하기
+}
+
 
 remaining_credits = {
     "구분":"필요",
