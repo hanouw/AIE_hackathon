@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from major_checker import read_major
+from major_checker import get_additional_majors
+
+major_list, minor_list, advanced_list = get_additional_majors()
 
 def single_major(main_major):
     
@@ -20,7 +22,6 @@ def single_major(main_major):
     df.loc[df["학정번호"].str.startswith("GCM", na=False), "개설전공"] = "문화미디어전공"
     # 'GIC'로 시작하는 경우 '국제통상전공'으로 설정
     df.loc[df["학정번호"].str.startswith("GIC", na=False), "개설전공"] = "국제통상전공"
-
 
     # Filter out courses
     df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == main_major)]
@@ -46,8 +47,6 @@ def single_major(main_major):
             GLC영어_학점 -= 3
         return GLC영어_학점
 
-
-
     # Define required credits for each category
     required_credits_dict = {
         "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
@@ -57,11 +56,11 @@ def single_major(main_major):
         "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
     }
 
-    # # Define 부전공 (minor) requirements for each major
-    # minor_requirements = {
-    #     "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
-    #     "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
-    # }
+    # Define 부전공 (minor) requirements for each major
+    minor_requirements = {
+        "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+        "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
+    }
 
     common_subject = {
         "RC": 1, 
@@ -151,12 +150,15 @@ def single_major(main_major):
         "GLC교양":" ",
         "3-4000단위":" ",
     }
-
-
-    # Create a DataFrame for the output
-    output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
-    output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
-
+    print(output_columns.keys())
+    if len(minor_list)&len(advanced_list) == 0:
+        # Create a DataFrame for the output
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
+        output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
+    else:
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits])
     # Write to an Excel file
+
+    
     output_df.to_excel("result_file.xlsx", index=False)
 
