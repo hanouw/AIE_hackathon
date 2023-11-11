@@ -1,21 +1,11 @@
 import pandas as pd
 import numpy as np
 
-<<<<<<< HEAD
-from major_checker import read_major, get_additional_majors
-
-import os
-os.system('cls')
-=======
-
-
-d
 def multi_majors():
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'
     df = pd.read_excel(excel_file_path, header=3)
     df["개설전공"] = "기타"
->>>>>>> efbfcd70c2c8868e0bb43ab3d8ac5c399cd05220
 
     # '학정번호' 열에서 NA/NaN 값을 가진 행을 무시하고 'GAI'로 시작하는 행의 '개설전공'을 '응용정보공학전공'으로 설정
     df.loc[df["학정번호"].str.startswith("GAI", na=False), "개설전공"] = "응용정보공학전공"
