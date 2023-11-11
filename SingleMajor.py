@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from major_checker import read_major
+from major_checker import get_additional_majors
+
+major_list, minor_list, advanced_list = get_additional_majors()
 
 def single_major(main_major):
     
@@ -20,7 +22,6 @@ def single_major(main_major):
     df.loc[df["학정번호"].str.startswith("GCM", na=False), "개설전공"] = "문화미디어전공"
     # 'GIC'로 시작하는 경우 '국제통상전공'으로 설정
     df.loc[df["학정번호"].str.startswith("GIC", na=False), "개설전공"] = "국제통상전공"
-
 
     # Filter out courses
     df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == main_major)]
@@ -46,8 +47,6 @@ def single_major(main_major):
             GLC영어_학점 -= 3
         return GLC영어_학점
 
-
-
     # Define required credits for each category
     required_credits_dict = {
         "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
@@ -56,12 +55,6 @@ def single_major(main_major):
         "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
         "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
     }
-
-    # # Define 부전공 (minor) requirements for each major
-    # minor_requirements = {
-    #     "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
-    #     "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
-    # }
 
     common_subject = {
         "RC": 1, 
@@ -89,8 +82,8 @@ def single_major(main_major):
                 df_filtered_과목종별_RC['학점'].sum()),
         " ":" ",
         "전기":int(df_filtered_과목종별_전기['학점'].sum()),
-        "전선":int(df_filtered_과목종별_전선['학점'].sum()),
         "전필":int(df_filtered_과목종별_전필["학점"].sum()),
+        "전선":int(df_filtered_과목종별_전선['학점'].sum()),
         "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
         "3-4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
     }
@@ -110,8 +103,8 @@ def single_major(main_major):
             GLC영어_학점(),
         " ":" ",
         "전기": required_credits["전공기초"],
-        "전선": required_credits["전공선택"],
         "전필": required_credits["전공필수"],
+        "전선": required_credits["전공선택"],
         "GLC교양": common_subject["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"],
     }
@@ -130,8 +123,8 @@ def single_major(main_major):
             common_subject["RC"] - completed_credits["RC"]),
         " ":" ",
         "전기": required_credits["전공기초"] - completed_credits["전기"],
-        "전선": required_credits["전공선택"] - completed_credits["전선"],
         "전필": required_credits["전공필수"] - completed_credits["전필"],
+        "전선": required_credits["전공선택"] - completed_credits["전선"],
         "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"] - completed_credits["3-4000단위"],
     }
@@ -152,11 +145,28 @@ def single_major(main_major):
         "3-4000단위":" ",
     }
 
+    minor_requirements = {
+    "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "문화미디어": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "국제통상": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "한국어문화교육": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    }
 
-    # Create a DataFrame for the output
-    output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
-    output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
+    if len(minor_list) == 0 and len(advanced_list) == 0:
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
+        output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
+    else:
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits])
+        for a in minor_list:
+            # 부전공 전기, 전필, 전선에 대한 열을 DataFrame에 추가
+            output_df[f"{a} 부전공 전기"] = minor_requirements[a]["전공기초"] - \
+                df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == a)].sum()
+            output_df[f"{a} 부전공 전필"] = minor_requirements[a]["전공필수"] - \
+                df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == a)].sum()
+            output_df[f"{a} 부전공 전선"] = minor_requirements[a]["전공선택"] - \
+                df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)].sum()
 
-    # Write to an Excel file
+    
     output_df.to_excel("result_file.xlsx", index=False)
 
