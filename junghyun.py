@@ -1,83 +1,167 @@
 import pandas as pd
 import numpy as np
 
-# Assuming read_major and get_additional_majors are defined in these modules
 from read_major import read_major
 from major_checker import get_additional_majors
 
-def calculate_credits(major_type, major_name, df, required_credits):
-    # Function to calculate remaining credits for a major
-    # Here you should implement the logic to calculate completed and remaining credits
-    # based on the major type and the data frame
-    # This is a placeholder function
-    completed_credits = {}  # Replace with actual calculation
-    remaining_credits = {}  # Replace with actual calculation
-    return completed_credits, remaining_credits
+#복수, 부, 심화 전공 여부 및 어떠한 전공인지 확인
+majors_dict, double_majors, minors, advanced_majors = get_additional_majors()
 
-# Fetch primary and additional major information
-primary_major = read_major()
-additional_majors_info = get_additional_majors()  # Expects a dict or list of major types and names
 
-# Define required credits for each category for primary and additional majors
-required_credits_dict = {
-    # Define the required credits for each major
-    # Example:
-    "응용정보공학": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
-    # Add other majors...
-}
+import os
+os.system('cls')
 
-# Define 복수전공 and 부전공 requirements
-double_major_requirements = {
-    # Define double major requirements
-    # Example:
-    "응용정보공학": {"전공기초": 9, "전공필수": 12, "전공선택": 15},
-    # Add other majors...
-}
-minor_requirements = {
-    # Define minor requirements
-    # Example:
-    "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
-    # Add other majors...
-}
-
-# Load the Excel file
+# 엑셀 파일 불러오기
 excel_file_path = 'report.xlsx'
 df = pd.read_excel(excel_file_path, header=3)
+df["개설전공"] = "기타"
 
-# Insert your logic to filter and categorize the courses based on '학정번호'
-# Example:
-# df.loc[df["학정번호"].str.startswith("GAI", na=False), "개설전공"] = "응용정보공학전공"
-# ...
+# '학정번호' 열에서 NA/NaN 값을 가진 행을 무시하고 'GAI'로 시작하는 행의 '개설전공'을 '응용정보공학전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GAI", na=False), "개설전공"] = "응용정보공학전공"
+# 'GBL'로 시작하는 경우 '바이오생활공학전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GBL", na=False), "개설전공"] = "바이오생활공학전공"
+# 'GKE' 또는 'GKC'로 시작하거나 'GKE2404'인 경우 '한국어문화교육전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GKE", na=False) | df["학정번호"].str.startswith("GKC", na=False) | (df["학정번호"] == "GKE2404"), "개설전공"] = "한국어문화교육전공"
+# 'GCM'으로 시작하는 경우 '문화미디어전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GCM", na=False), "개설전공"] = "문화미디어전공"
+# 'GIC'로 시작하는 경우 '국제통상전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GIC", na=False), "개설전공"] = "국제통상전공"
 
-# Initialize containers for total credits
-total_completed_credits = {}
-total_remaining_credits = {}
 
-# Calculate for primary major
-primary_completed, primary_remaining = calculate_credits("1전공", primary_major, df, required_credits_dict[primary_major])
-total_completed_credits.update(primary_completed)
-total_remaining_credits.update(primary_remaining)
+# Filter out courses
+df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == read_major())]
+df_filtered_과목종별_전선 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == read_major())]
+df_filtered_과목종별_전필 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == read_major())]
+df_filtered_과목종별_RC = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 'RC')]
+df_filtered_과목종별_GLC교양 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['과목 종별'] == '대교') & (df['학정번호'].str[:3] == 'GLC')]
+df_filtered_과목종별_34000단위 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['학정번호'].str[3:5] == '3천, 4천 단위')]
+df_filtered_과목종별_채플 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목종별'] == '공기')]
+df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목종별'] == '교기')]
+df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목종별'] == '교기')]
 
-# Calculate for additional majors
-for major_type, major_name in additional_majors_info.items():
-    if major_type == "복수전공":
-        required_credits = double_major_requirements.get(major_name, {})
-    elif major_type == "부전공":
-        required_credits = minor_requirements.get(major_name, {})
-    else:  # Other types can be added here
-        required_credits = {}
+#GLC영어 이수 유무
+GLC영어_학점 = 0
+if df[df['교과목명'] == 'GLC영어1' & df['학점'] == 3]:
+    GLC영어_학점 += 3
+else: 
+    pass
+if df[df['교과목명'] == 'GLC영어2' & df['학점'] == 3]:
+    GLC영어_학점 += 3
+else:
+    pass
 
-    completed, remaining = calculate_credits(major_type, major_name, df, required_credits)
-    # Aggregate results
-    for key in completed:
-        total_completed_credits[key] = total_completed_credits.get(key, 0) + completed[key]
-        total_remaining_credits[key] = total_remaining_credits.get(key, 0) + remaining[key]
+# Define required credits for each category
+required_credits_dict = {
+    "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
+    "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45},
+    "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
+    "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
+    "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
+}
 
-# Ensure no negative remaining credits
-total_remaining_credits = {k: max(v, 0) for k, v in total_remaining_credits.items()}
+# Define 복수전공 (double major) requirements for each major
+double_major_requirements = {
+    "응용정보공학": {"1전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15, "3-4000단위": 45},
+                   "2전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15}},
+    "국제통상": {"1전공": {"전공기초": 6, "전공선택": 30, "3-4000단위": 45},
+               "2전공": {"전공기초": 6, "전공선택": 30}},
+    "바이오생활공학": {"1전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15, "3-4000단위": 45},
+                    "2전공": {"전공기초": 9, "전공필수": 12, "전공선택": 15}},
+    "한국어문화교육": {"1전공": {"전공기초": 39, "전공필수": 6, "3-4000단위": 45},
+                   "2전공": {"전공기초": 39, "전공필수": 6}},
+    "문화미디어": {"1전공": {"전공기초": 6, "전공선택": 30, "3-4000단위": 45},
+                 "2전공": {"전공기초": 6, "전공선택": 30}}
+}
+
+# Define 부전공 (minor) requirements for each major
+minor_requirements = {
+    "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
+}
+
+
+
+common_subject = {
+    "RC": 1, 
+    "채플": 2,
+    "기독교의 이해": 3,
+    "GLC영어 0": 0,
+    "GLC영어 1": 3,
+    "GLC영어 2": 6,
+    "GLC교양": 9,
+}
+
+required_credits = required_credits_dict[read_major()]
+
+completed_credits = {
+    "구분":"이수",
+    "채플":int(df_filtered_과목종별_채플['학점'].sum()),
+    "기독교":int(df_filtered_과목종별_기독교의이해['학점'].sum()),
+    "GLC 영어": int(df_filtered_과목종별_GLC영어['학점'].sum()),
+    "GLC교양":int(df_filtered_과목종별_GLC교양['학점'].sum()),
+    "RC필수":int(df_filtered_과목종별_RC['학점'].sum()),
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------영어추가 이수로 변경
+    " ":" ",
+    "전기":int(df_filtered_과목종별_전기['학점'].sum()),
+    "전선":int(df_filtered_과목종별_전선['학점'].sum()),
+    "전필":int(df_filtered_과목종별_전필["학점"].sum()),
+    "RC":int(df_filtered_과목종별_RC["학점"].sum()),
+    "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
+    "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
+}
+
+
+total_credits = {
+    "구분":"요건",
+    "GLC영어": common_subject.values(GLC영어_학점),
+    "채플":common_subject["채플"],
+    "기독교":common_subject["기독교의 이해"],
+    "GLC교양":common_subject["GLC교양"],
+    "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------------영어 추가
+# 이거 추가하기
+}
+
+
+remaining_credits = {
+    "구분":"필요",
+    # "채플":common_subject["채플"],
+    # "기독교":common_subject["기독교의 이해"],
+    # "GLC 영어":1,
+    # "GLC교양":common_subject["GLC교양"],
+    # "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #---------------------영어 추가 미이수로 변경
+    " ":" ",
+    "전기": required_credits["전공기초"] - completed_credits["전기"],
+    "전선": required_credits["전공선택"] - completed_credits["전선"],
+    "전필": required_credits["전공필수"] - completed_credits["전필"],
+    "RC": common_subject["RC"] - completed_credits["RC"],
+    "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
+    "3-4000단위": required_credits["3-4000단위"] - completed_credits["3~4000단위"],
+}
+
+output_columns = {
+    "구분":" ",
+    "채플":common_subject["채플"],
+    "기독교":common_subject["기독교의 이해"],
+    "GLC 영어":1,
+    "GLC교양":common_subject["GLC교양"],
+    "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]),
+    " ": " ",
+    "전기":" ",
+    "전선":" ",
+    "전필":" ",
+    "RC":" ",
+    "GLC교양":" ",
+    "3~4000단위":" ",
+}
+
 
 # Create a DataFrame for the output
-output_df = pd.DataFrame([total_completed_credits, total_remaining_credits])
+output_df = pd.DataFrame([completed_credits,remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
+output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
 output_df.to_excel("result_file.xlsx", index=False)
+
