@@ -35,17 +35,17 @@ df_filtered_과목종별_전필 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) &
 df_filtered_과목종별_RC = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 'RC') & df['교과목명'].str.startswith("YONSEI", na=False)]
 df_filtered_과목종별_GLC교양 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['과목 종별'] == '대교') & (df['학정번호'].str[:3] == 'GLC')]
 df_filtered_과목종별_34000단위 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['학정번호'].str[3:5] == '3천, 4천 단위')]
-df_filtered_과목종별_채플 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목종별'] == '공기')]
-df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목종별'] == '교기')]
-df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목종별'] == '교기')]
+df_filtered_과목종별_채플 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목 종별'] == '공기')]
+df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목 종별'] == '교기')]
+df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목 종별'] == '교기')]
 
 #GLC영어 이수 유무
 GLC영어_학점 = 6
-if df[df['교과목명'] == 'GLC영어1' & df['학점'] == 0]:
+if df[(df['교과목명'] == 'GLC영어1') & (df['학점'] == 0)]:
     GLC영어_학점 -= 3
 else: 
     pass
-if df[df['교과목명'] == 'GLC영어2' & df['학점'] == 0]:
+if df[(df['교과목명'] == 'GLC영어2') & (df['학점'] == 0)]:
     GLC영어_학점 -= 3
 else:
     pass
@@ -78,8 +78,6 @@ minor_requirements = {
     "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
 }
-
-
 
 common_subject = {
     "RC": 1, 
@@ -121,7 +119,11 @@ total_credits = {
     "기독교":common_subject["기독교의 이해"],
     "GLC교양":common_subject["GLC교양"],
     "RC필수":common_subject["RC"],
-    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------------영어 추가
+    "소계": (common_subject["채플"]+
+           common_subject["기독교의 이해"]+
+           common_subject["GLC교양"]+
+           common_subject["RC"])+
+           common_subject.values(GLC영어_학점),
     " ":" ",
     "전기": required_credits["전공기초"],
     "전선": required_credits["전공선택"],
@@ -138,7 +140,11 @@ remaining_credits = {
     "GLC 영어": GLC영어_학점 - completed_credits["GLC영어"],
     "GLC교양":common_subject["GLC교양"] - completed_credits["GLC교양"],
     "RC필수":common_subject["RC"] - completed_credits["RC"],
-    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #---------------------영어 추가 미이수로 변경
+    "소계": (common_subject["채플"] - completed_credits["채플"]+
+           common_subject["기독교의 이해"] - completed_credits["기독교의 이해"]+
+           GLC영어_학점 - completed_credits["GLC영어"]+
+           common_subject["GLC교양"] - completed_credits["GLC교양"]+
+           common_subject["RC"] - completed_credits["RC"]), #---------------------영어 추가 미이수로 변경
     " ":" ",
     "전기": required_credits["전공기초"] - completed_credits["전기"],
     "전선": required_credits["전공선택"] - completed_credits["전선"],
