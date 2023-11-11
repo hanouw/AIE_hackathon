@@ -119,7 +119,13 @@ total_credits = {
     "GLC교양":common_subject["GLC교양"],
     "RC필수":common_subject["RC"],
     "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------------영어 추가
-# 이거 추가하기
+    " ":" ",
+    "전기": required_credits["전공기초"],
+    "전선": required_credits["전공선택"],
+    "전필": required_credits["전공필수"],
+    "RC": common_subject["RC"],
+    "GLC교양": common_subject["GLC교양"],
+    "3-4000단위": required_credits["3-4000단위"],
 }
 
 
