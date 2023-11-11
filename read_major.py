@@ -6,5 +6,6 @@ def read_major():
     workbook = load_workbook(excel_file_path)
     sheet = workbook['Table 1']
     df_major = sheet['L3'].value
-    return df_major
+    first_major = df_major[8:]
+    return first_major
 

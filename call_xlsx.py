@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+
+from read_major import read_major
+
 import os
 os.system('cls')
 
@@ -18,7 +21,15 @@ df_filtered_과목종별_ = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['
 
 
 # Define required credits for each category
-required_credits = {"전공기초": 20, "전공필수": 30, "전공선택": 15, "RC": 2, "GLC교양": 10, "대학교양": 5, "3천, 4천 단위": 45}
+required_credits_dict = {
+    "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
+    "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45},
+    "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
+    "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
+    "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
+}
+
+required_credits = required_credits_dict[read_major()]
 
 # Calculate the sum of completed credits in each category
 completed_credits_전기 = int(df_filtered_과목종별_전기['학점'].sum())
@@ -38,8 +49,17 @@ remaining_credits = {
     "3천, 4천 단위": required_credits["3천, 4천 단위"] - completed_credits_34000단위,
 }
 
+total_credits = {
+    "전기": required_credits["전공기초"],
+    "전선": required_credits["전공선택"],
+    "전필": required_credits["전공필수"],
+    "RC": required_credits["RC"] - completed_credits_RC,
+    "GLC교양": required_credits["GLC교양"] - completed_credits_GLC교양,
+    "3천, 4천 단위": required_credits["3천, 4천 단위"] - completed_credits_34000단위,
+}
+
 # Create a DataFrame for the output
-output_df = pd.DataFrame(list(remaining_credits.items()), columns=["Category", "Remaining Credits"])
+output_df = pd.DataFrame([remaining_credits], columns=remaining_credits.keys())
 output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
