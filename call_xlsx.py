@@ -5,7 +5,7 @@ from read_major import read_major
 from major_checker import get_additional_majors
 
 #복수, 부, 심화 전공 여부 및 어떠한 전공인지 확인
-majors_dict, double_majors, minors, advanced_majors = get_additional_majors()
+# majors_dict, double_majors, minors, advanced_majors = get_additional_majors()----------------------------------------나중에 키기
 
 
 import os
@@ -93,13 +93,15 @@ output_columns = {
     " ": " ",
     "채플":common_subject["채플"],
     "기독교":common_subject["기독교의 이해"],
-    "GLC 영어": ????,
-    "GLC교양": common_subject["GLC교양"]
+    "GLC 영어":1,
+    "GLC교양":common_subject["GLC교양"],
+    "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"])
 }
 
 
 # Create a DataFrame for the output
-output_df = pd.DataFrame([remaining_credits], columns=remaining_credits.keys())
+output_df = pd.DataFrame([remaining_credits], columns=output_columns.keys())
 output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
