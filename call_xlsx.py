@@ -133,7 +133,6 @@ total_credits = {
     "3-4000단위": required_credits["3-4000단위"],
 }
 
-
 remaining_credits = {
     "구분":"필요",
     "채플":common_subject["채플"] - completed_credits["채플"],
@@ -145,7 +144,7 @@ remaining_credits = {
            common_subject["기독교의 이해"] - completed_credits["기독교의 이해"]+
            GLC영어_학점 - completed_credits["GLC영어"]+
            common_subject["GLC교양"] - completed_credits["GLC교양"]+
-           common_subject["RC"] - completed_credits["RC"]), #---------------------영어 추가 미이수로 변경
+           common_subject["RC"] - completed_credits["RC"]),
     " ":" ",
     "전기": required_credits["전공기초"] - completed_credits["전기"],
     "전선": required_credits["전공선택"] - completed_credits["전선"],
@@ -172,7 +171,7 @@ output_columns = {
 
 
 # Create a DataFrame for the output
-output_df = pd.DataFrame([completed_credits,remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
+output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
 output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
