@@ -41,14 +41,14 @@ df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']
 
 #GLC영어 이수 유무
 GLC영어_학점 = 6
-if df[(df['교과목명'] == 'GLC영어1') & (df['학점'] == 0)]:
+
+# GLC영어1 과목을 찾고, 그 학점이 0인지 확인 후, 조건이 참이면 GLC영어_학점에서 3을 뺍니다.
+if (df['교과목명'] == 'GLC영어1') & (df['학점'] == 0).any():
     GLC영어_학점 -= 3
-else: 
-    pass
-if df[(df['교과목명'] == 'GLC영어2') & (df['학점'] == 0)]:
+
+# GLC영어2 과목을 찾고, 그 학점이 0인지 확인 후, 조건이 참이면 GLC영어_학점에서 3을 뺍니다.
+if (df['교과목명'] == 'GLC영어2') & (df['학점'] == 0).any():
     GLC영어_학점 -= 3
-else:
-    pass
 
 # Define required credits for each category
 required_credits_dict = {
