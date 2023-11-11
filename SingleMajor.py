@@ -3,9 +3,9 @@ import numpy as np
 
 from major_checker import get_additional_majors
 
-major_list, minor_list, advanced_list = get_additional_majors()
+# major_list, minor_list, advanced_list = get_additional_majors()
 
-def single_major(main_major):
+def single_major(main_major, minor_list, advanced_list):
     
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'

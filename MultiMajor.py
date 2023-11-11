@@ -6,8 +6,6 @@ import numpy as np
 
 def multi_majors(main_major,major_list, minor_list, advanced_list):
 
-          
-
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'
     df = pd.read_excel(excel_file_path, header=3)
