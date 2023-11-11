@@ -179,7 +179,7 @@ def single_major(main_major, minor_list, advanced_list):
                 output_columns[열_이름] = " "
                 total_credits[열_이름] = minor_requirements[a][학점_명]
                 completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, a)
-                remaining_credits[열_이름] = required_credits[학점_명] - completed_credits[과목_종별]
+                remaining_credits[열_이름] = total_credits[학점_명] - completed_credits[과목_종별]
 
             output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
    
