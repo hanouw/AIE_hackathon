@@ -11,16 +11,11 @@ excel_file_path = 'report.xlsx'
 df = pd.read_excel(excel_file_path, header=3)
 df["개설전공"] = "기타"
 
-if df[df["학정번호"][:3]] == "GAI":
-    df["개설전공"] = "응용정보공학전공"
-elif df[df["학정번호"][:3]] == "GBL":
-   df["개설전공"] = "바이오생활공학전공"
-elif df[df["학정번호"][:3]] == "GCM" or df[df["학정번호"][:3]] == "GKC" or df[df["학정번호"]] == "GKE2404":
-   df["개설전공"] = "문화미디어전공"
-elif df[df["학정번호"][:3]] == "GKE":
-   df["개설전공"] = "한국어문화교육전공"
-elif df[df["학정번호"][:3]] == "GIC" :
-   df["개설전공"] = "국제통상전공"
+df.loc[df["학정번호"].str.startswith("GAI"), "개설전공"] = "응용정보공학전공"
+df.loc[df["학정번호"].str.startswith("GBL"), "개설전공"] = "바이오생활공학전공"
+df.loc[df["학정번호"].str.startswith("GKE") or df["학정번호"].str.startswith("GKC") or df[df["학정번호"]] == "GKE2404", "개설전공"] = "한국어문화교육전공"
+df.loc[df["학정번호"].str.startswith("GCM"), "개설전공"] = "문화미디어전공"
+df.loc[df["학정번호"].str.startswith("GIC"), "개설전공"] = "국제통상전공"
 
 # Filter out courses
 df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == read_major)]
