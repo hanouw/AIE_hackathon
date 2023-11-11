@@ -1,57 +1,67 @@
 import pandas as pd
+import numpy as np
 
-class Major:
-    def __init__(self, name, course_codes, required_credits):
-        self.name = name
-        self.course_codes = course_codes
-        self.required_credits = required_credits
-        self.completed_credits = 0
+from read_major import read_major
 
-    def calculate_completed_credits(self, df):
-        filtered_df = df[df['학정번호'].isin(self.course_codes) & ~df['평가'].isin(['W', 'NP', 'F', 'U'])]
-        self.completed_credits = filtered_df['학점'].sum()
+import os
+os.system('cls')
 
-    def calculate_remaining_credits(self):
-        return {category: self.required_credits[category] - self.completed_credits for category in self.required_credits}
-
-def extract_major(소속):
-    if '대학' in 소속 and '전공' in 소속:
-        start = 소속.find('대학') + len('대학')
-        end = 소속.find('전공')
-        return 소속[start:end].strip()
-    return None
-
-# Load the Excel file
+# 엑셀 파일 불러오기
 excel_file_path = 'report.xlsx'
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel(excel_file_path, header=3)
 
-# Extract the student's major
-student_major_info = df.iloc[1]['소속']  # Assuming the major is in the second row
-student_major = extract_major(student_major_info)
+# Filter out courses
+df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기')]
+df_filtered_과목종별_전선 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선')]
+df_filtered_과목종별_전필 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필')]
+df_filtered_과목종별_RC = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 'RC')]
+df_filtered_과목종별_GLC교양 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['과목 종별'] == '대교') & (df['학정번호'].str[:3] == 'GLC')]
+df_filtered_과목종별_34000단위 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['학정번호'].str[3:5] == '3천, 4천 단위')]
+df_filtered_과목종별_ = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기')]
 
-# Course data starts from the third row onward
-course_data = df.iloc[2:]
 
-# Define unique required credits for each major
-# ...
+# Define required credits for each category
+required_credits_dict = {
+    "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45, "RC":1, "대학교양":9},
+    "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45, "RC":1, "대학교양":9},
+    "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45, "RC":1, "대학교양":9},
+    "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45, "RC":1, "대학교양":9},
+    "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45, "RC":1, "대학교양":9}
+}
 
-# Define the unique course codes for each major
-# ...
+required_credits = required_credits_dict[read_major()]
 
-# Find the Major object for the student's major
-major_obj = majors_dict.get(student_major)
-if not major_obj:
-    raise ValueError("Major not found in the defined majors")
+# Calculate the sum of completed credits in each category
+completed_credits_전기 = int(df_filtered_과목종별_전기['학점'].sum())
+completed_credits_전선 = int(df_filtered_과목종별_전선['학점'].sum())
+completed_credits_전필 = int(df_filtered_과목종별_전필["학점"].sum())
+completed_credits_RC = int(df_filtered_과목종별_RC["학점"].sum())
+completed_credits_GLC교양 = int(df_filtered_과목종별_GLC교양["학점"].sum())
+completed_credits_34000단위 = int(df_filtered_과목종별_34000단위["학점"].sum())
 
-# Calculate completed and remaining credits for the student's major
-major_obj.calculate_completed_credits(course_data)
-remaining_credits = major_obj.calculate_remaining_credits()
+
+remaining_credits = {
+    "전기": required_credits["전공기초"] - completed_credits_전기,
+    "전선": required_credits["전공선택"] - completed_credits_전선,
+    "전필": required_credits["전공필수"] - completed_credits_전필,
+    "RC": required_credits["RC"] - completed_credits_RC,
+    "대학교양": required_credits["대학교양"] - completed_credits_GLC교양,
+    "3-4000단위": required_credits["3-4000단위"] - completed_credits_34000단위,
+}
+
+total_credits = {
+    "전기": required_credits["전공기초"],
+    "전선": required_credits["전공선택"],
+    "전필": required_credits["전공필수"],
+    "RC": required_credits["RC"] - completed_credits_RC,
+    "대학교양": required_credits["대학교양"] - completed_credits_GLC교양,
+    "3-4000단위": required_credits["3-4000단위"] - completed_credits_34000단위,
+}
 
 # Create a DataFrame for the output
-output_df = pd.DataFrame(list(remaining_credits.items()), columns=["Category", "Remaining Credits"])
+output_df = pd.DataFrame([remaining_credits], columns=remaining_credits.keys())
+output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
-output_file_name = f"{major_obj.name}_result_file.xlsx"
-output_df.to_excel(output_file_name, index=False)
+output_df.to_excel("result_file.xlsx", index=False)
 
-print(f"Results for {major_obj.name} written to {output_file_name}")
