@@ -80,15 +80,6 @@ remaining_credits = {
     "3-4000단위": required_credits["3-4000단위"] - completed_credits_34000단위,
 }
 
-total_credits = {
-    "전기": required_credits["전공기초"],
-    "전선": required_credits["전공선택"],
-    "전필": required_credits["전공필수"],
-    "RC": common_subject["RC"],
-    "GLC교양": required_credits["GLC교양"],
-    "3-4000단위": required_credits["3-4000단위"],
-}
-
 output_columns = {
     " ": " ",
     "채플":common_subject["채플"],
