@@ -11,11 +11,17 @@ excel_file_path = 'report.xlsx'
 df = pd.read_excel(excel_file_path, header=3)
 df["개설전공"] = "기타"
 
-df.loc[df["학정번호"].str.startswith("GAI"), "개설전공"] = "응용정보공학전공"
-df.loc[df["학정번호"].str.startswith("GBL"), "개설전공"] = "바이오생활공학전공"
-df.loc[df["학정번호"].str.startswith("GKE") or df["학정번호"].str.startswith("GKC") or df[df["학정번호"]] == "GKE2404", "개설전공"] = "한국어문화교육전공"
-df.loc[df["학정번호"].str.startswith("GCM"), "개설전공"] = "문화미디어전공"
-df.loc[df["학정번호"].str.startswith("GIC"), "개설전공"] = "국제통상전공"
+# '학정번호' 열에서 NA/NaN 값을 가진 행을 무시하고 'GAI'로 시작하는 행의 '개설전공'을 '응용정보공학전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GAI", na=False), "개설전공"] = "응용정보공학전공"
+# 'GBL'로 시작하는 경우 '바이오생활공학전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GBL", na=False), "개설전공"] = "바이오생활공학전공"
+# 'GKE' 또는 'GKC'로 시작하거나 'GKE2404'인 경우 '한국어문화교육전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GKE", na=False) | df["학정번호"].str.startswith("GKC", na=False) | (df["학정번호"] == "GKE2404"), "개설전공"] = "한국어문화교육전공"
+# 'GCM'으로 시작하는 경우 '문화미디어전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GCM", na=False), "개설전공"] = "문화미디어전공"
+# 'GIC'로 시작하는 경우 '국제통상전공'으로 설정
+df.loc[df["학정번호"].str.startswith("GIC", na=False), "개설전공"] = "국제통상전공"
+
 
 # Filter out courses
 df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == read_major)]
@@ -59,6 +65,7 @@ completed_credits = (completed_credits_전기+
                     completed_credits_RC+
                     completed_credits_GLC교양)
 
+# print(df_filtered_과목종별_전기['학점'])
 
 remaining_credits = {
     "전기": required_credits["전공기초"] - completed_credits_전기,
