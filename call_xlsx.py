@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 os.system('cls')
 
@@ -39,6 +40,7 @@ remaining_credits = {
 
 # Create a DataFrame for the output
 output_df = pd.DataFrame(list(remaining_credits.items()), columns=["Category", "Remaining Credits"])
+output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
 output_df.to_excel("result_file.xlsx", index=False)
