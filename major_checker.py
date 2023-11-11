@@ -15,15 +15,17 @@ def get_additional_majors():
     minor_list=[]
     advanced_list=[]
 
+    print("예) 응용정보공학, 바이오생활공학, 문화미디어, 국제통상, 한국어문화교육")
+
     if major_num != 1:
-        for a in range (major_num):
-            major_list.append(input())     
+        for _ in range (major_num):
+            major_list.append(input("본, 복수 전공을 입력하세요: "))     
 
-    for b in range (minor_num):
-        minor_list.append(input())
+    for _ in range (minor_num):
+        minor_list.append(input("부전공을 입력하세요: "))
 
-    for c in range (advanced_num):
-        advanced_list.append(input())
+    for _ in range (advanced_num):
+        advanced_list.append(input("심화융합전공을 입력하세요: "))
 
     return major_list, minor_list, advanced_list
 
