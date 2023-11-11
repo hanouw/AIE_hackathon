@@ -79,6 +79,8 @@ minor_requirements = {
     "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
 }
 
+
+
 common_subject = {
     "RC": 1, 
     "채플": 2,
