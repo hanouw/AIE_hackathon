@@ -40,13 +40,13 @@ df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 
 df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목종별'] == '교기')]
 
 #GLC영어 이수 유무
-GLC영어_학점 = 0
-if df[df['교과목명'] == 'GLC영어1' & df['학점'] == 3]:
-    GLC영어_학점 += 3
+GLC영어_학점 = 6
+if df[df['교과목명'] == 'GLC영어1' & df['학점'] == 0]:
+    GLC영어_학점 -= 3
 else: 
     pass
-if df[df['교과목명'] == 'GLC영어2' & df['학점'] == 3]:
-    GLC영어_학점 += 3
+if df[df['교과목명'] == 'GLC영어2' & df['학점'] == 0]:
+    GLC영어_학점 -= 3
 else:
     pass
 
@@ -105,7 +105,6 @@ completed_credits = {
     "전기":int(df_filtered_과목종별_전기['학점'].sum()),
     "전선":int(df_filtered_과목종별_전선['학점'].sum()),
     "전필":int(df_filtered_과목종별_전필["학점"].sum()),
-    "RC":int(df_filtered_과목종별_RC["학점"].sum()),
     "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
     "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
 }
@@ -123,7 +122,6 @@ total_credits = {
     "전기": required_credits["전공기초"],
     "전선": required_credits["전공선택"],
     "전필": required_credits["전공필수"],
-    "RC": common_subject["RC"],
     "GLC교양": common_subject["GLC교양"],
     "3-4000단위": required_credits["3-4000단위"],
 }
@@ -131,17 +129,16 @@ total_credits = {
 
 remaining_credits = {
     "구분":"필요",
-    # "채플":common_subject["채플"],
-    # "기독교":common_subject["기독교의 이해"],
-    # "GLC 영어":1,
-    # "GLC교양":common_subject["GLC교양"],
-    # "RC필수":common_subject["RC"],
+    "채플":common_subject["채플"] - completed_credits["채플"],
+    "기독교":common_subject["기독교의 이해"] - completed_credits["기독교의 이해"],
+    "GLC 영어": GLC영어_학점 - completed_credits["GLC영어"],
+    "GLC교양":common_subject["GLC교양"] - completed_credits["GLC교양"],
+    "RC필수":common_subject["RC"] - completed_credits["RC"],
     "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #---------------------영어 추가 미이수로 변경
     " ":" ",
     "전기": required_credits["전공기초"] - completed_credits["전기"],
     "전선": required_credits["전공선택"] - completed_credits["전선"],
     "전필": required_credits["전공필수"] - completed_credits["전필"],
-    "RC": common_subject["RC"] - completed_credits["RC"],
     "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
     "3-4000단위": required_credits["3-4000단위"] - completed_credits["3~4000단위"],
 }
@@ -158,7 +155,6 @@ output_columns = {
     "전기":" ",
     "전선":" ",
     "전필":" ",
-    "RC":" ",
     "GLC교양":" ",
     "3~4000단위":" ",
 }
