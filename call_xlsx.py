@@ -58,43 +58,58 @@ common_subject = {
 
 required_credits = required_credits_dict[read_major()]
 
-
-completed_credits_전기 = int(df_filtered_과목종별_전기['학점'].sum())
-completed_credits_전선 = int(df_filtered_과목종별_전선['학점'].sum())
-completed_credits_전필 = int(df_filtered_과목종별_전필["학점"].sum())
-completed_credits_RC = int(df_filtered_과목종별_RC["학점"].sum())
-completed_credits_GLC교양 = int(df_filtered_과목종별_GLC교양["학점"].sum())
-completed_credits_34000단위 = int(df_filtered_과목종별_34000단위["학점"].sum())
-completed_credits = (completed_credits_전기+
-                    completed_credits_전선+ 
-                    completed_credits_전필+ 
-                    completed_credits_RC+
-                    completed_credits_GLC교양)
+completed_credits = {
+    "전기":int(df_filtered_과목종별_전기['학점'].sum()),
+    "전선":int(df_filtered_과목종별_전선['학점'].sum()),
+    "전필":int(df_filtered_과목종별_전필["학점"].sum()),
+    "RC":int(df_filtered_과목종별_RC["학점"].sum()),
+    "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
+    "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
+    # "completed_credits":(int(df_filtered_과목종별_전기['학점'].sum()) + 
+    #                     int(df_filtered_과목종별_전선['학점'].sum()) +
+    #                     int(df_filtered_과목종별_전필['학점'].sum())+
+    #                     int(df_filtered_과목종별_RC["학점"].sum())+
+    #                     int(df_filtered_과목종별_GLC교양["학점"].sum())
+    #                     )
+}
 
 remaining_credits = {
-    "전기": required_credits["전공기초"] - completed_credits_전기,
-    "전선": required_credits["전공선택"] - completed_credits_전선,
-    "전필": required_credits["전공필수"] - completed_credits_전필,
-    "RC": common_subject["RC"] - completed_credits_RC,
-    "GLC교양": common_subject["GLC교양"] - completed_credits_GLC교양,
-    "3-4000단위": required_credits["3-4000단위"] - completed_credits_34000단위,
+    "전기": required_credits["전공기초"] - completed_credits["전기"],
+    "전선": required_credits["전공선택"] - completed_credits["전선"],
+    "전필": required_credits["전공필수"] - completed_credits["전필"],
+    "RC": common_subject["RC"] - completed_credits["RC"],
+    "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
+    "3-4000단위": required_credits["3-4000단위"] - completed_credits["3~4000단위"],
 }
 
 output_columns = {
     " ": " ",
-    "채플":common_subject["채플"],
-    "기독교":common_subject["기독교의 이해"],
-    "GLC 영어":1,
-    "GLC교양":common_subject["GLC교양"],
-    "RC필수":common_subject["RC"],
-    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"])
+    "전기":" ",
+    "전선":" ",
+    "RC":" ",
+    "GLC교양":" ",
+    "3~4000단위":" ",
+#     "채플":common_subject["채플"],
+#     "기독교":common_subject["기독교의 이해"],
+#     "GLC 영어":1,
+#     "GLC교양":common_subject["GLC교양"],
+#     "RC필수":common_subject["RC"],
+#     "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"])
 }
 
 
 # Create a DataFrame for the output
-output_df = pd.DataFrame([remaining_credits], columns=output_columns.keys())
+output_df = pd.DataFrame([{completed_credits},{remaining_credits}], columns=output_columns.keys()) #전체, 이수, 잔여
 output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
 output_df.to_excel("result_file.xlsx", index=False)
+
+
+
+
+
+
+
+# {common_subject, required_credits}
 
