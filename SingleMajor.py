@@ -13,7 +13,7 @@ def SingleMajor():
     excel_file_path = 'report.xlsx'
     df = pd.read_excel(excel_file_path, header=3)
     df["개설전공"] = "기타"
-
+    
     # '학정번호' 열에서 NA/NaN 값을 가진 행을 무시하고 'GAI'로 시작하는 행의 '개설전공'을 '응용정보공학전공'으로 설정
     df.loc[df["학정번호"].str.startswith("GAI", na=False), "개설전공"] = "응용정보공학전공"
     # 'GBL'로 시작하는 경우 '바이오생활공학전공'으로 설정
