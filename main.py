@@ -7,7 +7,3 @@ if __name__ == "__main__":
     print(main_major)
     get_additional_majors()
 
-
-if __name__ == "__main__":
-    analyze_major()
-    
