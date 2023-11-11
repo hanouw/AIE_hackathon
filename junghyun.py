@@ -2,10 +2,7 @@ import pandas as pd
 import numpy as np
 
 from read_major import read_major
-from major_checker import get_additional_majors
 
-#복수, 부, 심화 전공 여부 및 어떠한 전공인지 확인
-# majors_dict, double_majors, minors, advanced_majors = get_additional_majors()----------------------------------------나중에 키기
 
 
 import os
@@ -39,11 +36,11 @@ df_filtered_과목종별_34000단위 = df[(~df['평가'].isin(['W', 'NP', 'F', '
 
 # Define required credits for each category
 required_credits_dict = {
-    "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
-    "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45},
-    "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
-    "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
-    "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
+    "국제통상전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45, "GLC교양": 9},
+    "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45, "GLC교양": 9},
+    "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45, "GLC교양": 9},
+    "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45, "GLC교양": 9},
+    "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45, "GLC교양": 9}
 }
 
 common_subject = {
@@ -53,12 +50,11 @@ common_subject = {
     "GLC영어 0": 0,
     "GLC영어 1": 3,
     "GLC영어 2": 6,
-    "GLC교양": 9,
 }
 
 required_credits = required_credits_dict[read_major()]
 
-
+# Calculate the sum of completed credits in each category
 completed_credits_전기 = int(df_filtered_과목종별_전기['학점'].sum())
 completed_credits_전선 = int(df_filtered_과목종별_전선['학점'].sum())
 completed_credits_전필 = int(df_filtered_과목종별_전필["학점"].sum())
@@ -71,28 +67,27 @@ completed_credits = (completed_credits_전기+
                     completed_credits_RC+
                     completed_credits_GLC교양)
 
+
 remaining_credits = {
     "전기": required_credits["전공기초"] - completed_credits_전기,
     "전선": required_credits["전공선택"] - completed_credits_전선,
     "전필": required_credits["전공필수"] - completed_credits_전필,
     "RC": common_subject["RC"] - completed_credits_RC,
-    "GLC교양": common_subject["GLC교양"] - completed_credits_GLC교양,
+    "GLC교양": required_credits["GLC교양"] - completed_credits_GLC교양,
     "3-4000단위": required_credits["3-4000단위"] - completed_credits_34000단위,
 }
 
-output_columns = {
-    " ": " ",
-    "채플":common_subject["채플"],
-    "기독교":common_subject["기독교의 이해"],
-    "GLC 영어":1,
-    "GLC교양":common_subject["GLC교양"],
-    "RC필수":common_subject["RC"],
-    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"])
+total_credits = {
+    "전기": required_credits["전공기초"],
+    "전선": required_credits["전공선택"],
+    "전필": required_credits["전공필수"],
+    "RC": common_subject["RC"],
+    "GLC교양": required_credits["GLC교양"],
+    "3-4000단위": required_credits["3-4000단위"],
 }
 
-
 # Create a DataFrame for the output
-output_df = pd.DataFrame([remaining_credits], columns=output_columns.keys())
+output_df = pd.DataFrame([remaining_credits], columns=remaining_credits.keys())
 output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
 # Write to an Excel file
