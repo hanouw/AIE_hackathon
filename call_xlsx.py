@@ -100,7 +100,11 @@ completed_credits = {
     "GLC 영어": int(df_filtered_과목종별_GLC영어['학점'].sum()),
     "GLC교양":int(df_filtered_과목종별_GLC교양['학점'].sum()),
     "RC필수":int(df_filtered_과목종별_RC['학점'].sum()),
-    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------영어추가 이수로 변경
+    "소계": int(df_filtered_과목종별_채플["학점"].sum()+
+              df_filtered_과목종별_기독교의이해['학점'].sum()+
+              df_filtered_과목종별_GLC영어['학점'].sum()+
+              df_filtered_과목종별_GLC교양['학점'].sum()+
+              df_filtered_과목종별_RC['학점'].sum()),
     " ":" ",
     "전기":int(df_filtered_과목종별_전기['학점'].sum()),
     "전선":int(df_filtered_과목종별_전선['학점'].sum()),
