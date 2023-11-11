@@ -35,7 +35,20 @@ df_filtered_과목종별_전필 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) &
 df_filtered_과목종별_RC = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 'RC')]
 df_filtered_과목종별_GLC교양 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['과목 종별'] == '대교') & (df['학정번호'].str[:3] == 'GLC')]
 df_filtered_과목종별_34000단위 = df[(~df['평가'].isin(['W', 'NP', 'F', 'U'])) & (df['학정번호'].str[3:5] == '3천, 4천 단위')]
+df_filtered_과목종별_채플 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목종별'] == '공기')]
+df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목종별'] == '교기')]
+df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목종별'] == '교기')]
 
+#GLC영어 이수 유무
+GLC영어_학점 = 0
+if df[df['교과목명'] == 'GLC영어1' & df['학점'] == 3]:
+    GLC영어_학점 += 3
+else: 
+    pass
+if df[df['교과목명'] == 'GLC영어2' & df['학점'] == 3]:
+    GLC영어_학점 += 3
+else:
+    pass
 
 # Define required credits for each category
 required_credits_dict = {
@@ -64,7 +77,6 @@ double_major_requirements = {
 minor_requirements = {
     "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
-    # Define for other majors if available...
 }
 
 
@@ -83,22 +95,39 @@ required_credits = required_credits_dict[read_major()]
 
 completed_credits = {
     "구분":"이수",
+    # "채플":common_subject["채플"],
+    # "기독교":common_subject["기독교의 이해"],
+    # "GLC 영어":1,
+    # "GLC교양":common_subject["GLC교양"],
+    # "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------영어추가 이수로 변경
+    " ":" ",
     "전기":int(df_filtered_과목종별_전기['학점'].sum()),
     "전선":int(df_filtered_과목종별_전선['학점'].sum()),
     "전필":int(df_filtered_과목종별_전필["학점"].sum()),
     "RC":int(df_filtered_과목종별_RC["학점"].sum()),
     "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
     "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
-    # "completed_credits":(int(df_filtered_과목종별_전기['학점'].sum()) + 
-    #                     int(df_filtered_과목종별_전선['학점'].sum()) +
-    #                     int(df_filtered_과목종별_전필['학점'].sum())+
-    #                     int(df_filtered_과목종별_RC["학점"].sum())+
-    #                     int(df_filtered_과목종별_GLC교양["학점"].sum())
-    #                     )
 }
+
+"구분":"요건",
+"GLC영어": common_subject.values(GLC영어_학점)
+"채플":common_subject["채플"],
+"기독교":common_subject["기독교의 이해"],
+"GLC교양":common_subject["GLC교양"],
+"RC필수":common_subject["RC"],
+"소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #----------------영어 추가
+# 이거 추가하기
 
 remaining_credits = {
     "구분":"필요",
+    # "채플":common_subject["채플"],
+    # "기독교":common_subject["기독교의 이해"],
+    # "GLC 영어":1,
+    # "GLC교양":common_subject["GLC교양"],
+    # "RC필수":common_subject["RC"],
+    "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]), #---------------------영어 추가 미이수로 변경
+    " ":" ",
     "전기": required_credits["전공기초"] - completed_credits["전기"],
     "전선": required_credits["전공선택"] - completed_credits["전선"],
     "전필": required_credits["전공필수"] - completed_credits["전필"],
@@ -131,12 +160,4 @@ output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in '
 
 # Write to an Excel file
 output_df.to_excel("result_file.xlsx", index=False)
-
-
-
-
-
-
-
-# {common_subject, required_credits}
 
