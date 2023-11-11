@@ -13,20 +13,21 @@ def get_additional_majors():
     if len(counts) >= 3 and int(counts[2]) > 0:
         majors_dict["심화전공"].extend([input(f"Enter 심화전공 {i+1}: ").strip() for i in range(int(counts[2]))])
 
+    double_majors = majors_dict["복수전공"]
+    minors = majors_dict["부전공"]
+    advanced_majors = majors_dict["심화전공"]
+    return majors_dict, double_majors, minors, advanced_majors
+
+if __name__ == "__main__":
+    # Example usage
+    primary_major = read_major()
+    additional_majors_dict = get_additional_majors()
+
+    # Accessing majors by type
     double_majors = additional_majors_dict["복수전공"]
     minors = additional_majors_dict["부전공"]
     advanced_majors = additional_majors_dict["심화전공"]
-    return majors_dict, double_majors, minors, advanced_majors
 
-# Example usage
-primary_major = read_major()
-additional_majors_dict = get_additional_majors()
-
-# Accessing majors by type
-double_majors = additional_majors_dict["복수전공"]
-minors = additional_majors_dict["부전공"]
-advanced_majors = additional_majors_dict["심화전공"]
-
-print(double_majors)
-print(minors)
-print(advanced_majors)
+    print(double_majors)
+    print(minors)
+    print(advanced_majors)
