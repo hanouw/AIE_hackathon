@@ -95,10 +95,10 @@ required_credits = required_credits_dict[read_major()]
 completed_credits = {
     "구분":"이수",
     "채플":int(df_filtered_과목종별_채플['학점'].sum()),
-    "기독교":int(df_filtered_과목종별_기독교의이해['학점'].sum()),
-    "GLC 영어": int(df_filtered_과목종별_GLC영어['학점'].sum()),
+    "기독교의 이해":int(df_filtered_과목종별_기독교의이해['학점'].sum()),
+    "GLC영어": int(df_filtered_과목종별_GLC영어['학점'].sum()),
     "GLC교양":int(df_filtered_과목종별_GLC교양['학점'].sum()),
-    "RC필수":int(df_filtered_과목종별_RC['학점'].sum()),
+    "RC":int(df_filtered_과목종별_RC['학점'].sum()),
     "소계": int(df_filtered_과목종별_채플["학점"].sum()+
               df_filtered_과목종별_기독교의이해['학점'].sum()+
               df_filtered_과목종별_GLC영어['학점'].sum()+
@@ -115,16 +115,16 @@ completed_credits = {
 
 total_credits = {
     "구분":"요건",
-    "GLC영어": common_subject.values(GLC영어_학점),
+    "GLC영어": GLC영어_학점,
     "채플":common_subject["채플"],
-    "기독교":common_subject["기독교의 이해"],
+    "기독교의 이해":common_subject["기독교의 이해"],
     "GLC교양":common_subject["GLC교양"],
-    "RC필수":common_subject["RC"],
+    "RC":common_subject["RC"],
     "소계": (common_subject["채플"]+
            common_subject["기독교의 이해"]+
            common_subject["GLC교양"]+
            common_subject["RC"])+
-           common_subject.values(GLC영어_학점),
+           GLC영어_학점,
     " ":" ",
     "전기": required_credits["전공기초"],
     "전선": required_credits["전공선택"],
@@ -137,10 +137,10 @@ total_credits = {
 remaining_credits = {
     "구분":"필요",
     "채플":common_subject["채플"] - completed_credits["채플"],
-    "기독교":common_subject["기독교의 이해"] - completed_credits["기독교의 이해"],
-    "GLC 영어": GLC영어_학점 - completed_credits["GLC영어"],
+    "기독교의 이해":common_subject["기독교의 이해"] - completed_credits["기독교의 이해"],
+    "GLC영어": GLC영어_학점 - completed_credits["GLC영어"],
     "GLC교양":common_subject["GLC교양"] - completed_credits["GLC교양"],
-    "RC필수":common_subject["RC"] - completed_credits["RC"],
+    "RC":common_subject["RC"] - completed_credits["RC"],
     "소계": (common_subject["채플"] - completed_credits["채플"]+
            common_subject["기독교의 이해"] - completed_credits["기독교의 이해"]+
            GLC영어_학점 - completed_credits["GLC영어"]+
@@ -157,10 +157,10 @@ remaining_credits = {
 output_columns = {
     "구분":" ",
     "채플":common_subject["채플"],
-    "기독교":common_subject["기독교의 이해"],
-    "GLC 영어":1,
+    "기독교의 이해":common_subject["기독교의 이해"],
+    "GLC영어":" ",
     "GLC교양":common_subject["GLC교양"],
-    "RC필수":common_subject["RC"],
+    "RC":common_subject["RC"],
     "소계": (common_subject["채플"]+common_subject["기독교의 이해"]+common_subject["GLC교양"]+common_subject["RC"]),
     " ": " ",
     "전기":" ",
