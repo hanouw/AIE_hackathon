@@ -67,6 +67,8 @@ minor_requirements = {
     # Define for other majors if available...
 }
 
+
+
 common_subject = {
     "RC": 1, 
     "채플": 2,
