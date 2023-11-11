@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 
 from read_major import read_major
+from major_checker import get_additional_majors
+
+#복수, 부, 심화 전공 여부 및 어떠한 전공인지 확인
+majors_dict, double_majors, minors, advanced_majors = get_additional_majors()
+
 
 import os
 os.system('cls')
