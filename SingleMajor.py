@@ -147,29 +147,25 @@ def single_major(main_major):
 
     minor_requirements = {
     "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
-    "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
+    "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "문화미디어": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "국제통상": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "한국어문화교육": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     }
 
-    if len(minor_list)&len(advanced_list) == 0:
-        # Create a DataFrame for the output
-        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
+    if len(minor_list) == 0 and len(advanced_list) == 0:
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
         output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
     else:
-        for a in minor_list:
-            output_columns["  "] = ["  ", "  ", "  "]
-            output_columns["전기"] = [minor_requirements[a]["전공기초"],
-                                    df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == a)],
-                                    minor_requirements[a]["전공기초"]-df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == a)]]
-            output_columns["전필"] = [minor_requirements[a]["전공필수"],
-                                    df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == a)],
-                                    minor_requirements[a]["전공필수"]-df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == a)]]
-            output_columns["전선"] = [minor_requirements[a]["전공선택"],
-                                    df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)],
-                                    minor_requirements[a]["전공선택"]-df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)]]
-
-
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits])
-    # Write to an Excel file
+        for a in minor_list:
+            # 부전공 전기, 전필, 전선에 대한 열을 DataFrame에 추가
+            output_df[f"{a} 부전공 전기"] = minor_requirements[a]["전공기초"] - \
+                df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == a)].sum()
+            output_df[f"{a} 부전공 전필"] = minor_requirements[a]["전공필수"] - \
+                df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == a)].sum()
+            output_df[f"{a} 부전공 전선"] = minor_requirements[a]["전공선택"] - \
+                df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)].sum()
 
     
     output_df.to_excel("result_file.xlsx", index=False)
