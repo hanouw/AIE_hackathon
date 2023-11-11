@@ -148,18 +148,20 @@ def single_major(main_major):
     minor_requirements = {
     "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
-    "문화미디어": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+    "문화미디어": {"전공기초": 6, "전공필수": 0, "전공선택": 15},
     "국제통상": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     "한국어문화교육": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     }
 
     if len(minor_list) == 0 and len(advanced_list) == 0:
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
-        output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
     else:
-        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits])
+        # 먼저 output_df 초기화
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
+
+        # 그 다음, minor_list를 순회하며 새로운 열 추가
         for a in minor_list:
-            # 부전공 전기, 전필, 전선에 대한 열을 DataFrame에 추가
+            output_df.insert(len(output_columns), " ", " ", allow_duplicates=True)
             output_df[f"{a} 부전공 전기"] = minor_requirements[a]["전공기초"] - \
                 df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == a)].sum()
             output_df[f"{a} 부전공 전필"] = minor_requirements[a]["전공필수"] - \
@@ -167,6 +169,7 @@ def single_major(main_major):
             output_df[f"{a} 부전공 전선"] = minor_requirements[a]["전공선택"] - \
                 df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)].sum()
 
-    
+    # 모든 수정 사항 반영 후 DataFrame을 Excel 파일로 저장
+    output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
     output_df.to_excel("result_file.xlsx", index=False)
 
