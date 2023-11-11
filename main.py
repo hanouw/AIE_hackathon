@@ -1,5 +1,5 @@
 import pandas as pd
-from read_major import read_major
+from major_checker import read_major, get_additional_majors
 from SingleMajor import SingleMajor
 
 if __name__ == "__main__":
