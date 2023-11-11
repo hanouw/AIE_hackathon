@@ -168,7 +168,7 @@ def single_major(main_major):
                 df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전필') & (df['개설전공'] == a)].sum()
             output_df[f"{a} 부전공 전선"] = minor_requirements[a]["전공선택"] - \
                 df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선') & (df['개설전공'] == a)].sum()
-
+        output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
     # 모든 수정 사항 반영 후 DataFrame을 Excel 파일로 저장
     output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
     output_df.to_excel("result_file.xlsx", index=False)
