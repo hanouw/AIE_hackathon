@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pandas as pd
 
 # Load the Excel file
@@ -17,3 +18,6 @@ output_df = pd.DataFrame(list(remaining_credits.items()), columns=["Category", "
 
 # Write to an Excel file
 output_df.to_excel("remaining_credits.xlsx", index=False)
+=======
+print("hi")
+>>>>>>> 9e7b2d2cba6ecc8ca19cfc92b7e9ce92f108f9f1
