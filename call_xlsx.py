@@ -6,8 +6,6 @@ os.system('cls')
 excel_file_path = 'report.xlsx'
 df = pd.read_excel(excel_file_path, header=3)
 
-
-
 # Filter out courses
 df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기')]
 df_filtered_과목종별_전선 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전선')]
