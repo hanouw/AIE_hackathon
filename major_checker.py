@@ -24,5 +24,5 @@ def get_additional_majors():
     for c in range (advanced_num):
         advanced_list.append(input())
 
-    return major_num, minor_num, advanced_num, major_list, minor_list, advanced_list
+    return major_list, minor_list, advanced_list
 
