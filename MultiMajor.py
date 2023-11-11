@@ -1,7 +1,13 @@
 import pandas as pd
 import numpy as np
 
-def multi_majors(main_major):
+
+
+
+def multi_majors(main_major,major_list, minor_list, advanced_list):
+
+            
+
     # 엑셀 파일 불러오기
     excel_file_path = 'report.xlsx'
     df = pd.read_excel(excel_file_path, header=3)
@@ -18,6 +24,7 @@ def multi_majors(main_major):
     # 'GIC'로 시작하는 경우 '국제통상전공'으로 설정
     df.loc[df["학정번호"].str.startswith("GIC", na=False), "개설전공"] = "국제통상전공"
 
+    all_results_df = pd.DataFrame()
 
     # Filter out courses
     df_filtered_과목종별_전기 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == '전기') & (df['개설전공'] == main_major)]
