@@ -4,5 +4,8 @@ import numpy as np
 from read_major import read_major
 from major_checker import get_additional_majors
 
-excel_file_path = 'report.xlsx'
-main_major = read_major()
+def analyze_major():
+    main_major = read_major()
+    print(main_major)
+
+    
