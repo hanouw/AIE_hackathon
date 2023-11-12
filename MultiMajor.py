@@ -68,7 +68,10 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
     # Define 부전공 (minor) requirements for each major
     minor_requirements = {
         "응용정보공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
-        "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9}
+        "바이오생활공학": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+        "문화미디어": {"전공기초": 6, "전공필수": 0, "전공선택": 15},
+        "국제통상": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
+        "한국어문화교육": {"전공기초": 6, "전공필수": 6, "전공선택": 9},
     }
 
     advanced_major_requirements = {
@@ -171,7 +174,7 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
     def calculate_completed_credits(df, 과목_종별, 개설전공):
         return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
     for a in major_list:
-        for 과목_종별, 학점_명 in [("전기", "전기"), ("전필", "전필"), ("전선", "전선")]:
+        for 과목_종별, 학점_명 in [("전공기초", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
             열_이름 = f"(2전공 ){a} {과목_종별}"
             output_columns[열_이름] = " "
             total_credits[열_이름] = double_major_requirements[a][학점_명]
@@ -184,7 +187,7 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
     elif len(minor_list)!=0 and len(advanced_list)==0:
 
         for a in minor_list:
-            for 과목_종별, 학점_명 in [("전기", "전기"), ("전필", "전필"), ("전선", "전선")]:
+            for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
                 열_이름 = f"(부){a} {과목_종별}"
                 output_columns[열_이름] = " "
                 total_credits[열_이름] = minor_requirements[a][학점_명]
