@@ -5,10 +5,11 @@ from major_checker import get_additional_majors
 
 # major_list, minor_list, advanced_list = get_additional_majors()
 
-def single_major(main_major, minor_list, advanced_list):
+def single_major(file_name, main_major, minor_list, advanced_list):
+    
     
     # 엑셀 파일 불러오기
-    excel_file_path = 'report.xlsx'
+    excel_file_path = file_name
     df = pd.read_excel(excel_file_path, header=3)
     df["개설전공"] = "기타"
 
