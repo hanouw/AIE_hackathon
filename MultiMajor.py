@@ -124,9 +124,9 @@ def multi_majors(file_name, main_major,major_list, minor_list, advanced_list):
             common_subject["RC"])+
             GLC영어_학점,
         " ":" ",
-        "전기": required_credits["전공기초"],
-        "전선": required_credits["전공선택"],
-        "전필": required_credits["전공필수"],
+        "전기": required_credits["전기"],
+        "전선": required_credits["전선"],
+        "전필": required_credits["전필"],
         "GLC교양": common_subject["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"],
     }
@@ -144,9 +144,9 @@ def multi_majors(file_name, main_major,major_list, minor_list, advanced_list):
             common_subject["GLC교양"] - completed_credits["GLC교양"]+
             common_subject["RC"] - completed_credits["RC"]),
         " ":" ",
-        "전기": required_credits["전공기초"] - completed_credits["전기"],
-        "전선": required_credits["전공선택"] - completed_credits["전선"],
-        "전필": required_credits["전공필수"] - completed_credits["전필"],
+        "전기": required_credits["전기"] - completed_credits["전기"],
+        "전선": required_credits["전선"] - completed_credits["전선"],
+        "전필": required_credits["전필"] - completed_credits["전필"],
         "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"] - completed_credits["3-4000단위"],
     }
