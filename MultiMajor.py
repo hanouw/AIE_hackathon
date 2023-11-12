@@ -195,6 +195,10 @@ def multi_majors(file_name, main_major,major_list, minor_list, advanced_list):
                 remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
 
+    # Create a DataFrame for the output
+    output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
+    output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
+
     # 숫자형 데이터만 포함하는 새 DataFrame 생성
     numeric_df = output_df.select_dtypes(include=[np.number])
 
@@ -205,9 +209,6 @@ def multi_majors(file_name, main_major,major_list, minor_list, advanced_list):
 
     # 새로 계산된 합을 '소계' 열에 할당
     output_df["총이수"] = [total_sum, completed_sum, remaining_sum]
-    # Create a DataFrame for the output
-    output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
-    output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
 
     # Write to an Excel file
     output_df.to_excel("result_file.xlsx", index=False)
