@@ -173,13 +173,18 @@ def single_major(file_name, main_major, minor_list, advanced_list):
                 remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
 
-    total_sum = output_df.loc[0].select_dtypes(include=[np.number]).sum()
-    completed_sum = output_df.loc[1].select_dtypes(include=[np.number]).sum()
-    remaining_sum = output_df.loc[2].select_dtypes(include=[np.number]).sum()
-
-    output_df["소계"] = [total_sum, completed_sum, remaining_sum]
 
 
+    # 숫자형 데이터만 포함하는 새 DataFrame 생성
+    numeric_df = output_df.select_dtypes(include=[np.number])
+
+    # 각 행의 합 계산
+    total_sum = numeric_df.loc[0].sum()
+    completed_sum = numeric_df.loc[1].sum()
+    remaining_sum = numeric_df.loc[2].sum()
+
+    # 새로 계산된 합을 '소계' 열에 할당
+    output_df["총이수"] = [total_sum, completed_sum, remaining_sum]
     output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
     output_df.to_excel("result_file.xlsx", index=False)
 
