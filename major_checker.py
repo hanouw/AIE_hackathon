@@ -1,7 +1,7 @@
 from openpyxl import load_workbook
 
-def read_major():
-    excel_file_path = 'report.xlsx'
+def read_major(file_name):
+    excel_file_path = file_name
     workbook = load_workbook(excel_file_path)
     sheet = workbook['Table 1']
     df_major = sheet['L3'].value
