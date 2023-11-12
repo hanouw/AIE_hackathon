@@ -107,7 +107,7 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
         "전선":int(df_filtered_과목종별_전선['학점'].sum()),
         "전필":int(df_filtered_과목종별_전필["학점"].sum()),
         "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
-        "3~4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
+        "3-4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
     }
 
 
@@ -148,7 +148,7 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
         "전선": required_credits["전공선택"] - completed_credits["전선"],
         "전필": required_credits["전공필수"] - completed_credits["전필"],
         "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
-        "3-4000단위": required_credits["3-4000단위"] - completed_credits["3~4000단위"],
+        "3-4000단위": required_credits["3-4000단위"] - completed_credits["3-4000단위"],
     }
 
 
@@ -168,7 +168,7 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
         "전선":" ",
         "전필":" ",
         "GLC교양":" ",
-        "3~4000단위":" ",
+        "3-4000단위":" ",
     }
 
     def calculate_completed_credits(df, 과목_종별, 개설전공):
@@ -195,11 +195,17 @@ def multi_majors(main_major,major_list, minor_list, advanced_list):
                 remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
 
+    total_sum = output_df.loc[0].select_dtypes(include=[np.number]).sum()
+    completed_sum = output_df.loc[1].select_dtypes(include=[np.number]).sum()
+    remaining_sum = output_df.loc[2].select_dtypes(include=[np.number]).sum()
 
+    output_df["소계"] = [total_sum, completed_sum, remaining_sum]
 
     # Create a DataFrame for the output
     output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys()) #전체, 이수, 잔여
     output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
+
+
 
     # Write to an Excel file
     output_df.to_excel("result_file.xlsx", index=False)
