@@ -33,6 +33,8 @@ def single_major(main_major, minor_list, advanced_list):
     df_filtered_과목종별_채플 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목 종별'] == '공기')]
     df_filtered_과목종별_기독교의이해 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'YCA') & (df['과목 종별'] == '교기')]
     df_filtered_과목종별_GLC영어 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'GLC') & (df['과목 종별'] == '교기')]
+    df_filtered_과목종별_AI심화 = df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['학정번호'].str[:3] == 'AIC2100') & (df['학정번호'].str[:3] == 'AIC2130') & (df['학정번호'].str[:3] == 'AIC3100') & (df['학정번호'].str[:3] == 'AIC2110') & (df['학정번호'].str[:3] == 'GAI3006')]
+
 
     def GLC영어_학점():
         #GLC영어 이수 유무
@@ -53,7 +55,9 @@ def single_major(main_major, minor_list, advanced_list):
         "한국어문화교육전공": {"전공필수": 42, "전공선택": 6, "3-4000단위": 45},
         "문화미디어전공": {"전공기초": 6, "전공선택": 42, "3-4000단위": 45},
         "바이오생활공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
-        "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45}
+        "응용정보공학전공": {"전공기초": 18, "전공필수": 12, "전공선택": 24, "3-4000단위": 45},
+        "AI융합심화전공": {"AI코어과목": 9, "1전공 AI융합심화과목": 3, "1전공": 51}
+
     }
 
     common_subject = {
@@ -86,6 +90,9 @@ def single_major(main_major, minor_list, advanced_list):
         "전선":int(df_filtered_과목종별_전선['학점'].sum()),
         "GLC교양":int(df_filtered_과목종별_GLC교양["학점"].sum()),
         "3-4000단위":int(df_filtered_과목종별_34000단위["학점"].sum()),
+        "AI코어과목":int(df_filtered_과목종별_AI심화["학점"].sum()),
+        "1전공 AI융합심화과목":int(df_filtered_과목종별_AI심화["학점"].sum()),
+
     }
 
 
@@ -107,6 +114,8 @@ def single_major(main_major, minor_list, advanced_list):
         "전선": required_credits["전공선택"],
         "GLC교양": common_subject["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"],
+        "AI코어과목":required_credits["AI코어과목"],
+        "1전공 AI융합심화과목": required_credits["1전공 AI융합심화과목"]
     }
 
     remaining_credits = {
@@ -127,6 +136,9 @@ def single_major(main_major, minor_list, advanced_list):
         "전선": required_credits["전공선택"] - completed_credits["전선"],
         "GLC교양": common_subject["GLC교양"] - completed_credits["GLC교양"],
         "3-4000단위": required_credits["3-4000단위"] - completed_credits["3-4000단위"],
+        "AI코어과목": required_credits["AI코어과목"] - completed_credits["AI코어과목"],
+        "1전공 AI융합심화과목": required_credits["1전공 AI융합심화과목"] - completed_credits["1전공 AI융합심화과목"],
+
     }
 
     output_columns = {
@@ -174,37 +186,26 @@ def single_major(main_major, minor_list, advanced_list):
                 remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
         output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
 
-    # elif len(minor_list)==0 and len(advanced_list)!=0:
+    # elif len(minor_list)!=0 and len(advanced_list)!=0:
     #     def calculate_completed_credits(df, 과목_종별, 개설전공):
     #         return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
 
-        # for b in advanced_list:
-        #     for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
-        #         열_이름 = f"(심화){a} {과목_종별}"
-        #         output_columns[열_이름] = " "
-        #         total_credits[열_이름] = minor_requirements[b][학점_명]
-        #         completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, b)
-        #         remaining_credits[열_이름] = total_credits[학점_명] - completed_credits[과목_종별]
-    elif len(minor_list)!=0 and len(advanced_list)!=0:
-        def calculate_completed_credits(df, 과목_종별, 개설전공):
-            return int(df[~df['평가'].isin(['W', 'NP', 'F', 'U']) & (df['과목 종별'] == 과목_종별) & (df['개설전공'] == 개설전공)]['학점'].sum())
+    # for a in minor_list:
+    #     for 과목_종별, 학점_명 in [("전기", "전기"), ("전필", "전필"), ("전선", "전선")]:
+    #         열_이름 = f"(부){a} {과목_종별}"
+    #         output_columns[열_이름] = " "
+    #         total_credits[열_이름] = minor_requirements[a][학점_명]
+    #         completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, a)
+    #         remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
 
-        for a in minor_list:
-            for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
-                열_이름 = f"(부){a} {과목_종별}"
-                output_columns[열_이름] = " "
-                total_credits[열_이름] = minor_requirements[a][학점_명]
-                completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, a)
-                remaining_credits[열_이름] = total_credits[학점_명] - completed_credits[과목_종별]
-        for b in advanced_list:
-            for 과목_종별, 학점_명 in [("전기", "전공기초"), ("전필", "전공필수"), ("전선", "전공선택")]:
-                열_이름 = f"(심화){a} {과목_종별}"
-                output_columns[열_이름] = " "
-                total_credits[열_이름] = minor_requirements[b][학점_명]
-                completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, b)
-                remaining_credits[열_이름] = total_credits[학점_명] - completed_credits[과목_종별]
-
-            output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
+    # for b in minor_list:
+    #     for 과목_종별, 학점_명 in [("전기", "전기"), ("전필", "전필"), ("전선", "전선")]:
+    #         열_이름 = f"(부){a} {과목_종별}"
+    #         output_columns[열_이름] = " "
+    #         total_credits[열_이름] = minor_requirements[a][학점_명]
+    #         completed_credits[열_이름] = calculate_completed_credits(df, 과목_종별, a)
+    #         remaining_credits[열_이름] = total_credits[열_이름] - completed_credits[열_이름]
+    # output_df = pd.DataFrame([total_credits, completed_credits, remaining_credits], columns=output_columns.keys())
    
     output_df = output_df.apply(lambda x: np.where(x < 0, 0, x) if x.dtype.kind in 'biufc' else x)
     output_df.to_excel("result_file.xlsx", index=False)
